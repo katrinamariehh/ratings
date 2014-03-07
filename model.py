@@ -1,13 +1,16 @@
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, ForeignKey
 from sqlalchemy import Column, Integer, String, DATETIME
-from sqlalchemy.orm import sessionmaker
-import seed
+from sqlalchemy.orm import sessionmaker, scoped_session, relationship, backref
+# import seed
 
-ENGINE = None
-Session = None
+ENGINE = create_engine("sqlite:///ratings.db", echo=False)
+session = scoped_session(sessionmaker(bind=ENGINE,
+                                      autocommit = False,
+                                      autoflush = False))
 
 Base = declarative_base()
+Base.query = session.query_property()
 
 ### Class declarations go here
 class User(Base):
@@ -34,23 +37,48 @@ class Rating(Base):
     __tablename__ = "ratings"
 
     id = Column(Integer, primary_key = True)
-    movie_id = Column(Integer) # maybe make this nullable later?
-    user_id = Column(Integer) # nullable???
+    movie_id = Column(Integer, ForeignKey('movies.id'))
+    user_id = Column(Integer, ForeignKey('users.id'))
     rating = Column(Integer)
+
+    user = relationship("User",
+                         backref=backref("ratings", order_by=id))
+    movie = relationship("Movie",
+                         backref=backref("movies", order_by=id))
+
 
 ### End class declarations
 
-def connect():
-    global ENGINE
-    global Session
+### Functions
 
-    ENGINE = create_engine("sqlite:///ratings.db", echo=True)
-    Session = sessionmaker(bind=ENGINE)
+def create_user():
+    pass
 
-    return Session()
+def add_rating():
+    pass
+
+def update_rating():
+    pass
+
+def authenticate(username, password):
+    # query = """SELECT id, username, password FROM users WHERE username = ?"""
+    # DB.execute(query, (username,))
+    # row = DB.fetchone()
+
+    if password == # int(row[2]):
+        return row[0]
+    else:
+        return None
+
+
+
+
+### End functions
+
+
 
 def main():
-    """In case we need this for something"""
+    # """In case we need this for something"""
     pass
 
 if __name__ == "__main__":

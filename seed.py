@@ -4,14 +4,10 @@ import datetime
 
 def load_users(session):
     with open('seed_data/u.user', 'rb') as f:
-        reader = csv.reader(f)
+        reader = csv.reader(f, delimiter="|")
         for row in reader:
         # setting row info from file as an object to go into the database
-            row_data = row[0].split('|')
-            u_id = row_data[0]
-            u_age = row_data[1]
-            u_pw = row_data[3]
-            u_zip = row_data[4]
+            u_id, u_age, u_gender, u_pw, u_zip = row
             u = model.User(password=u_pw, age=u_age, zipcode=u_zip)
             u.id = u_id
             session.add(u)
@@ -26,6 +22,7 @@ def load_movies(session):
         for row_data in reader:
             id = row_data[0]
             name = row_data[1].decode("latin-1")
+            name = name[:-6].strip()
             if len(row_data[2]) > 0:
                 released_at = datetime.datetime.strptime(row_data[2], "%d-%b-%Y")
             imdb_url = row_data[4]
@@ -42,9 +39,7 @@ def load_ratings(session):
     with open('seed_data/u.data', 'rb') as f:
         reader = csv.reader(f, delimiter="\t")
         for row_data in reader:
-            user_id = row_data[0]
-            movie_id = row_data[1]
-            rating = row_data[2]
+            user_id, movie_id, rating, timestamp = row_data
             r = model.Rating(movie_id=movie_id, rating=rating, user_id=user_id)
             session.add(r)
     session.commit()

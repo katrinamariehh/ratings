@@ -1,0 +1,33 @@
+body{
+    background-color: #eee;
+}
+
+form.signin {
+    width: 330px;
+    margin: 50px auto;
+}
+
+form.signin input.form-control{
+    margin-bottom: 5px;
+}
+
+form.signin input.btn {
+    margin-top: 15px;
+}
+
+.logout-button {
+    width: 60px;
+    float: right;
+}
+
+.home-button {
+    width: 60px;
+    float: left;
+}
+
+.menu-bar {
+    background-color: #428bca;
+    width: 100%;
+    height: 40px;
+    padding: 5px;
+}
