@@ -2,6 +2,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine, ForeignKey
 from sqlalchemy import Column, Integer, String, DATETIME
 from sqlalchemy.orm import sessionmaker, scoped_session, relationship, backref
+from operator import itemgetter
 # import seed
 
 ENGINE = create_engine("sqlite:///ratings.db", echo=False)
@@ -51,7 +52,23 @@ class Rating(Base):
 
 ### Functions
 
-def create_user():
+def get_user_data(user_id):
+    user_data = []
+    user = session.query(User).get(user_id)
+    ratings = user.ratings
+    for rating in ratings:
+        user_data.append((rating.movie.name, rating.movie.released_at.year, rating.rating))
+    user_data = sorted(user_data, key=itemgetter(1))
+
+    return user_data
+
+def create_user(email, password, age, zipcode):
+    u = User(email=email, password=password, age=age, zipcode=zipcode)
+    session.add(u)
+    session.commit()
+    return u.id
+
+def get_movie_data(movie):
     pass
 
 def add_rating():
@@ -60,15 +77,15 @@ def add_rating():
 def update_rating():
     pass
 
-def authenticate(username, password):
-    # query = """SELECT id, username, password FROM users WHERE username = ?"""
-    # DB.execute(query, (username,))
-    # row = DB.fetchone()
+def authenticate(user_id, password):
+    user = session.query(User).get(user_id)
+    pw = user.password
 
-    if password == # int(row[2]):
-        return row[0]
+    if password == pw:
+        return user_id
     else:
         return None
+    pass
 
 
 

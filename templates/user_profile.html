@@ -1,0 +1,16 @@
+{% extends 'master.html' %}    
+{% block body %}
+    <h2>User: {{ user_id }}</h2>
+    <table>
+        <th>Movie</th>
+        <th>Release Date</th>
+        <th>User Rating</th>
+    {% for data in user_data %}
+        <tr>
+            <td>{{ data[0] }}</td>
+            <td>{{ data[1] }}</td>
+            <td>{{ data[2] }}</td>
+        </tr>
+    {% endfor %}
+    </table>
+{% endblock %}
