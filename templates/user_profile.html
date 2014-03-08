@@ -7,7 +7,7 @@
         <th>User Rating</th>
     {% for data in user_data %}
         <tr>
-            <td>{{ data[0] }}</td>
+            <td><a href="/movie/{{data[3]}}">{{ data[0] }}</a></td>
             <td>{{ data[1] }}</td>
             <td>{{ data[2] }}</td>
         </tr>

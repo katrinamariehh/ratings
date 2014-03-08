@@ -57,7 +57,7 @@ def get_user_data(user_id):
     user = session.query(User).get(user_id)
     ratings = user.ratings
     for rating in ratings:
-        user_data.append((rating.movie.name, rating.movie.released_at.year, rating.rating))
+        user_data.append((rating.movie.name, rating.movie.released_at.year, rating.rating, rating.movie.id))
     user_data = sorted(user_data, key=itemgetter(1))
 
     return user_data
@@ -68,8 +68,27 @@ def create_user(email, password, age, zipcode):
     session.commit()
     return u.id
 
-def get_movie_data(movie):
-    pass
+def average_rating(movie_id):
+    # get avg rating; takes a movie ID as an argument
+    ratings = session.query(Rating).filter_by(movie_id=movie_id)
+    ratings = [r.rating for r in ratings]
+    mean = sum(ratings)/len(ratings)
+    return mean
+
+def get_movie_data(movie_id):
+    this_movie_average = average_rating(movie_id)
+    movie_data = session.query(Movie).get(movie_id)
+    name = movie_data.name
+    released_at = movie_data.released_at.year
+    imdb_url = movie_data.imdb_url
+    this_movie_data = [movie_id, name, released_at, imdb_url]
+    movie_ratings = session.query(Rating).filter_by(movie_id=movie_id)
+    this_movie_ratings= []
+    for r in movie_ratings:
+        rater = r.user_id
+        rating = r.rating
+        this_movie_ratings.append((rater, rating))
+    return this_movie_average, this_movie_data, this_movie_ratings
 
 def add_rating():
     pass
@@ -91,7 +110,7 @@ def authenticate(user_id, password):
 
 
 ### End functions
-
+# TODO write comments
 
 
 def main():

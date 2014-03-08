@@ -51,9 +51,10 @@ def user_profile(user_id):
     user_data = model.get_user_data(user_id)
     return render_template("user_profile.html", user_data=user_data, user_id=user_id)
 
-@app.route("/<movie>")
-def view_movie():
-    pass
+@app.route("/movie/<movie_id>")
+def view_movie(movie_id):
+    avg, data, ratings = model.get_movie_data(movie_id)
+    return render_template("movie.html", data=data, avg=avg, ratings=ratings)
 
 
 
