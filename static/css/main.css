@@ -31,3 +31,8 @@ form.signin input.btn {
     height: 40px;
     padding: 5px;
 }
+
+.rate {
+    width: 200px;
+    margin-bottom: 10px;
+}

@@ -3,12 +3,21 @@
     <h2>{{ data[1] }} ({{ data[2] }})</h2>
     <p><a href="{{ data[3] }}">View on IMDB</a></p>
     <h3>Average Rating: {{ avg }}</h3>
-    {% if user_rating %}
-    <h3>Your rating: {{ user_rating }}</h3>
-    <h4><a href="/movie/{{ data[0] }}/edit">Edit your rating</a></h4>
-    {% else %}
-    <h4><a href="/movie/{{ data[0] }}/edit">Rate this movie</a></h4>
-    {% endif %}
+    {% if prediction %}
+    <h3>We predict you will rate this movie {{prediction}}.</h3>
+    {% endif%}
+    <h3>Varchar says:</h3>
+    <p>"{{beratement}}"</p>
+    <form class="form-inline" method="POST" action="/movie/{{ data[0] }}">
+        {% if user_rating %}
+        <h3>Your rating: {{ user_rating }}</h3>
+        <input type="text" class="form-control rate" placeholder="Your current rating: {{ user_rating }}" name="rating">
+        {% else %}
+        <input type="text" class="form-control rate" placeholder="Rating" name="rating">
+        {% endif %}
+        <br/>
+        <input type="submit" class="rate btn btn-sm btn-primary " value="Submit">
+    </form>
     <table>
         <th style="width: 100px;">User</th>
         <th>Rating</th>
