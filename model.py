@@ -45,7 +45,7 @@ class Rating(Base):
     user = relationship("User",
                          backref=backref("ratings", order_by=id))
     movie = relationship("Movie",
-                         backref=backref("movies", order_by=id))
+                         backref=backref("ratings", order_by=id))
 
 
 ### End class declarations
@@ -68,6 +68,18 @@ def create_user(email, password, age, zipcode):
     session.commit()
     return u.id
 
+def get_all_users():
+    user_list = session.query(User).all()
+    return user_list
+
+def get_all_movies():
+    movie_list = []
+    all_movies = session.query(Movie).all()
+    for movie in all_movies:
+        movie_list.append((movie.id, movie.name, movie.released_at))
+    movie_list = sorted(movie_list, key=itemgetter(2))
+    return movie_list
+
 def average_rating(movie_id):
     # get avg rating; takes a movie ID as an argument
     ratings = session.query(Rating).filter_by(movie_id=movie_id)
@@ -75,33 +87,58 @@ def average_rating(movie_id):
     mean = sum(ratings)/len(ratings)
     return mean
 
-def get_movie_data(movie_id):
+def get_movie_data(movie_id, user_id):
+    # generate the average rating for the given movie
     this_movie_average = average_rating(movie_id)
+    # generate the data for this particular movie (name, release dat, imdb url)
     movie_data = session.query(Movie).get(movie_id)
     name = movie_data.name
     released_at = movie_data.released_at.year
     imdb_url = movie_data.imdb_url
+    # throw that info into a variable to be returned by the function
     this_movie_data = [movie_id, name, released_at, imdb_url]
+    # get the ratings for the movie
     movie_ratings = session.query(Rating).filter_by(movie_id=movie_id)
+    # append the ratings for this movie to a list
     this_movie_ratings= []
     for r in movie_ratings:
         rater = r.user_id
         rating = r.rating
         this_movie_ratings.append((rater, rating))
-    return this_movie_average, this_movie_data, this_movie_ratings
+    # get the currently logged-in user's rating
+    user_rating = get_user_rating(movie_id, user_id)
+    
+    return this_movie_average, this_movie_data, this_movie_ratings, user_rating
 
-def add_rating():
-    pass
+def get_user_rating(movie_id, user_id):
+    user_rating = session.query(Rating).filter_by(movie_id=movie_id, user_id=user_id)
+    user_rated = False
+    for r in user_rating:
+        user_rated = True
+    if user_rated:
+        user_rating = user_rating[0].rating
+    else:
+        user_rating = None
 
-def update_rating():
-    pass
+    return user_rating
+
+def update_rating(movie_id, user_id, user_rating):
+    old_rating = session.query(Rating).filter_by(movie_id=movie_id, user_id=user_id)
+    if get_user_rating(movie_id, user_id):
+        old_rating[0].rating = user_rating
+        r = old_rating
+    else:
+        r = Rating(movie_id=movie_id, user_id=user_id, rating=user_rating)
+        session.add(r)
+    session.commit()
+    return None
 
 def authenticate(user_id, password):
     user = session.query(User).get(user_id)
     pw = user.password
 
     if password == pw:
-        return user_id
+        return user.id
     else:
         return None
     pass

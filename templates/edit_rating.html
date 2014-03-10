@@ -1,0 +1,13 @@
+{% extends 'master.html' %}    
+{% block body %}
+
+    <form class="signin" method="POST" action="/movie/{{ movie_id }}/edit">
+        {% if user_rating %}
+        <input type="text" class="form-control" placeholder="Your current rating: {{ user_rating }}" name="rating">
+        {% else %}
+        <input type="text" class="form-control" placeholder="Rating" name="rating">
+        {% endif %}
+        <input type="submit" class="btn btn-lg btn-primary btn-block" value="Submit">
+    </form>
+
+{% endblock %}

@@ -1,16 +1,25 @@
 {% extends 'master.html' %}    
 {% block body %}
     <h2>{{ data[1] }} ({{ data[2] }})</h2>
-    <h3>Average Rating: {{ avg }}</h3>
     <p><a href="{{ data[3] }}">View on IMDB</a></p>
+    <h3>Average Rating: {{ avg }}</h3>
+    {% if user_rating %}
+    <h3>Your rating: {{ user_rating }}</h3>
+    <h4><a href="/movie/{{ data[0] }}/edit">Edit your rating</a></h4>
+    {% else %}
+    <h4><a href="/movie/{{ data[0] }}/edit">Rate this movie</a></h4>
+    {% endif %}
     <table>
-        <th>User</th>
+        <th style="width: 100px;">User</th>
         <th>Rating</th>
     {% for rating in ratings %}
         <tr>
             <td><a href="/user/{{rating[0]}}">{{ rating[0] }}</a></td>
             <td>{{ rating[1] }}</td>
+            </td>
         </tr>
     {% endfor %}
     </table>
 {% endblock %}
+
+<!-- note to ourselves: maybe render separate templates for each list item in order to use logic ONLY in python -->
